@@ -6,7 +6,29 @@
   <title>Antigravity Studio — Zero Fałszu</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
+    :root {
+      --background: #171411;
+      --card: #211b17;
+      --border: #40352b;
+      --foreground: #f5eee6;
+      --primary: #ffb84d;
+      --primary-foreground: #251707;
+      --chart-1: #ff6b5f;
+      --chart-2: #43d9c2;
+      --chart-3: #c5ed62;
+      --chart-4: #e879f9;
+      --chart-5: #70a7ff;
+    }
+
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; }
+
+    body {
+      min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse at 12% 0%, color-mix(in srgb, var(--primary) 11%, transparent), transparent 42%),
+        linear-gradient(160deg, var(--background), color-mix(in srgb, var(--background) 88%, var(--primary)));
+      background-attachment: fixed;
+    }
 
     /* Custom subtle range inputs using theme tokens */
     input[type="range"] {
@@ -83,6 +105,13 @@
       background: color-mix(in srgb, var(--chart-2) 22%, var(--card));
       box-shadow: inset 0 0 14px color-mix(in srgb, var(--chart-2) 35%, transparent);
     }
+    .white-key.lesson-target,
+    .black-key.lesson-target {
+      outline: 3px solid var(--primary);
+      outline-offset: -3px;
+      box-shadow: 0 0 16px color-mix(in srgb, var(--primary) 55%, transparent);
+      opacity: 1;
+    }
 
     .black-key {
       position: absolute;
@@ -133,27 +162,111 @@
       border-color: var(--primary) !important;
       background: color-mix(in srgb, var(--primary) 16%, var(--card)) !important;
       box-shadow: 0 6px 20px color-mix(in srgb, var(--primary) 28%, transparent);
+      animation: chordGlow 2.4s ease-in-out infinite;
     }
 
     /* Sequencer cells */
     .step-btn {
       transition: transform 0.07s ease, background-color 0.1s ease, box-shadow 0.1s ease;
     }
+    .step-btn[aria-pressed="false"] {
+      background: color-mix(in srgb, var(--foreground) 10%, var(--card)) !important;
+      border-color: color-mix(in srgb, var(--foreground) 24%, var(--border)) !important;
+    }
+    .step-btn:nth-child(4n + 1)[aria-pressed="false"] {
+      background: color-mix(in srgb, var(--foreground) 17%, var(--card)) !important;
+      border-color: color-mix(in srgb, var(--primary) 38%, var(--border)) !important;
+    }
+    .step-btn[aria-pressed="true"] {
+      box-shadow: inset 0 0 10px color-mix(in srgb, var(--foreground) 22%, transparent), 0 0 8px color-mix(in srgb, var(--primary) 36%, transparent);
+    }
+    .step-btn:hover {
+      filter: brightness(1.2);
+    }
     .step-btn.current-col {
-      outline: 2px solid color-mix(in srgb, var(--foreground) 55%, transparent);
+      outline: 2px solid var(--foreground);
       outline-offset: -1px;
+      z-index: 1;
     }
     .step-btn.is-hit {
-      transform: scale(1.1);
+      transform: scale(1.06);
+      filter: brightness(1.25);
+    }
+
+    #playBtn:not(.is-playing) {
+      animation: playGlow 2.6s ease-in-out infinite;
     }
 
     /* Recording pulse */
     @keyframes recPulse {
-      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--error) 55%, transparent); }
-      50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--error) 0%, transparent); }
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--chart-1) 45%, transparent); }
+      50% { box-shadow: 0 0 16px 3px color-mix(in srgb, var(--chart-1) 38%, transparent); }
     }
     .rec-active {
-      animation: recPulse 1.2s infinite;
+      border-color: var(--chart-1) !important;
+      animation: recPulse 2s ease-in-out infinite;
+    }
+    .lesson-select {
+      min-height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--background);
+      color: var(--foreground);
+      padding: 0 10px;
+    }
+    .lesson-note {
+      fill: var(--foreground);
+      stroke: var(--foreground);
+      transition: fill 0.12s ease, stroke 0.12s ease;
+    }
+    .lesson-note.is-current {
+      fill: var(--primary);
+      stroke: var(--primary);
+      filter: drop-shadow(0 0 5px color-mix(in srgb, var(--primary) 75%, transparent));
+    }
+    .lesson-staff-line {
+      stroke: color-mix(in srgb, var(--foreground) 48%, transparent);
+      stroke-width: 1;
+    }
+    .lesson-ledger {
+      stroke: color-mix(in srgb, var(--foreground) 60%, transparent);
+      stroke-width: 1;
+    }
+    .lesson-answer:hover,
+    .lesson-answer.is-selected {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 15%, var(--card));
+    }
+    .lesson-bass-key {
+      min-width: 88px;
+      transition: transform 0.08s ease, border-color 0.12s ease, background-color 0.12s ease;
+    }
+    .lesson-bass-key:active {
+      transform: translateY(2px);
+      background: color-mix(in srgb, var(--primary) 20%, var(--card));
+    }
+    @keyframes playGlow {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary) 22%, transparent); }
+      50% { box-shadow: 0 0 18px 3px color-mix(in srgb, var(--primary) 48%, transparent); }
+    }
+    @keyframes chordGlow {
+      0%, 100% { box-shadow: 0 6px 16px color-mix(in srgb, var(--primary) 18%, transparent); }
+      50% { box-shadow: 0 6px 24px color-mix(in srgb, var(--primary) 42%, transparent); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #playBtn:not(.is-playing),
+      .chord-pad.playing,
+      .rec-active {
+        animation: none;
+      }
+    }
+    @media (max-width: 640px) {
+      .lesson-staff-scroll {
+        overflow-x: auto;
+      }
+      .lesson-staff-scroll svg {
+        min-width: 520px;
+      }
     }
   </style>
 </head>
@@ -202,6 +315,85 @@
         <!-- Populated by JS -->
       </div>
     </header>
+
+    <!-- LESSON STUDIO -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-4" aria-labelledby="lessonHeading">
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p class="text-xs uppercase tracking-wider text-[var(--primary)] font-bold">Akademia Pianolex</p>
+          <h2 id="lessonHeading" class="text-lg font-bold mt-1">Lekcja: „Dla Elizy” — Ludwig van Beethoven</h2>
+          <p class="text-xs text-[var(--foreground)] opacity-75 mt-1">Krótki motyw początkowy. Wybierz poziom i rękę, odsłuchaj wzorzec, a potem zagraj nuty na pianinie ekranowym lub klawiaturze.</p>
+        </div>
+        <span id="lessonProgress" class="text-xs px-2.5 py-1 rounded-full border border-[var(--border)] text-[var(--foreground)] opacity-75">Postęp: jeszcze nie ćwiczono</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <label class="space-y-1 text-xs font-medium">
+          <span>Poziom</span>
+          <select id="lessonLevel" class="lesson-select w-full">
+            <option value="beginner">Początkujący — prawa ręka</option>
+            <option value="intermediate">Średni — wybór ręki</option>
+          </select>
+        </label>
+        <label class="space-y-1 text-xs font-medium">
+          <span>Ćwiczenie</span>
+          <select id="lessonHand" class="lesson-select w-full">
+            <option value="right">Prawa ręka — melodia</option>
+            <option value="left">Lewa ręka — uproszczony bas</option>
+            <option value="both">Obie ręce — razem</option>
+          </select>
+        </label>
+        <label class="space-y-1 text-xs font-medium">
+          <span class="flex justify-between"><span>Tempo ćwiczenia</span><span id="lessonTempoLabel">60 BPM</span></span>
+          <input id="lessonTempo" type="range" min="40" max="100" value="60" class="w-full mt-2" />
+        </label>
+        <label class="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] cursor-pointer self-end">
+          <input id="lessonNoteNames" type="checkbox" checked class="accent-[var(--primary)] cursor-pointer" />
+          <span>Nazwy nut na pięciolinii</span>
+        </label>
+      </div>
+
+      <div id="lessonBassPanel" class="hidden rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+        <p class="text-xs font-semibold">Uproszczone dźwięki lewej ręki — wybieraj klawisze:</p>
+        <div id="lessonBassKeys" class="flex flex-wrap gap-2"></div>
+        <p class="text-[11px] text-[var(--foreground)] opacity-70">Bas to ćwiczeniowe opracowanie, nie pełny zapis partii Beethovena. Klawiatura komputera: Z = A2, X = E3, C = A3.</p>
+      </div>
+
+      <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+        <div class="flex justify-between items-center gap-2">
+          <h3 class="text-xs font-bold">Zapis i aktualna nuta</h3>
+          <span id="lessonTarget" class="text-xs font-mono px-2 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)]">Wybierz ćwiczenie</span>
+        </div>
+        <div id="lessonScore" class="lesson-staff-scroll overflow-hidden" aria-label="Zapis nutowy ćwiczenia"></div>
+        <p id="lessonFeedback" class="text-xs text-[var(--foreground)] opacity-75" aria-live="polite">Wybierz poziom i rozpocznij ćwiczenie. Błędna nuta nie przerywa lekcji.</p>
+        <p id="lessonKeyboardGuide" class="text-[11px] text-[var(--foreground)] opacity-70">Melodia: A=C4, S=D4, D=E4, F=G4, G=A4, H=B4, J=C5, K=D5, L=D♯5, ;=E5.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button id="lessonStartBtn" class="px-3.5 py-2 rounded-xl bg-[var(--primary)] text-[var(--background)] font-semibold text-sm hover:opacity-90 active:scale-95 transition cursor-pointer">Rozpocznij ćwiczenie</button>
+        <button id="lessonListenBtn" class="px-3.5 py-2 rounded-xl bg-[var(--card)] border border-[var(--border)] text-[var(--foreground)] font-medium text-sm hover:border-[var(--primary)] active:scale-95 transition cursor-pointer">▶ Odsłuchaj wzorzec</button>
+        <label class="flex items-center gap-2 text-xs px-3 py-2 rounded-lg bg-[var(--card)] border border-[var(--border)] cursor-pointer">
+          <input id="lessonRepeat" type="checkbox" class="accent-[var(--primary)] cursor-pointer" />
+          <span>Powtarzaj po ukończeniu</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- COMPOSER CONTEXT AND QUIZ -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 space-y-3" aria-labelledby="composerHeading">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h2 id="composerHeading" class="text-sm font-bold">Poznaj kompozytora — Beethoven</h2>
+        <button id="quizListenBtn" class="text-xs px-2.5 py-1 rounded-lg bg-[var(--card)] border border-[var(--border)] hover:border-[var(--primary)] transition cursor-pointer">Odsłuchaj A4 do quizu</button>
+      </div>
+      <p class="text-xs text-[var(--foreground)] opacity-75">„Für Elise” znaczy „Dla Elizy”. To utwór fortepianowy; nie ma pewności, kim była adresatka dedykacji. Sam motyw odtworzony w lekcji jest syntezowany lokalnie — aplikacja nie korzysta z nagrania komercyjnego.</p>
+      <div id="composerQuiz" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+      <p id="quizFeedback" class="text-xs text-[var(--foreground)] opacity-75" aria-live="polite">Odpowiedz na cztery pytania; wynik quizu jest liczony w tej sesji.</p>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px]">
+        <a href="https://www.beethoven.de/en/archive" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] underline">Beethoven-Haus — archiwum</a>
+        <a href="https://www.mutopiaproject.org/" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] underline">Mutopia — nuty i licencje</a>
+        <a href="https://en.wikipedia.org/wiki/F%C3%BCr_Elise" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] underline">Für Elise — informacje i źródła</a>
+      </div>
+    </section>
 
     <!-- LIVE VISUALIZER + LOOPER TIMELINE -->
     <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-3 space-y-2.5">
@@ -389,6 +581,10 @@
 
   </div>
 
+  <footer class="max-w-5xl mx-auto px-4 pb-6 text-center text-xs text-[var(--foreground)] opacity-75">
+    Program stworzony przez <strong class="text-[var(--foreground)]">eLJot_pianolux</strong> · © eLJot_pianolux. Wszelkie prawa zastrzeżone.
+  </footer>
+
   <script>
     // =========================================================================
     // 1. MUSICAL DATA & PRESETS (Pop / Lo-Fi / Filmowe / Zachód Słońca)
@@ -546,6 +742,58 @@
       { id: 'perc',  label: 'Clap',   colorVar: '--chart-4' }
     ];
 
+    const LESSON_NOTES = {
+      45: { name: 'A2', staffStep: 1, clef: 'bass' },
+      52: { name: 'E3', staffStep: 5, clef: 'bass' },
+      57: { name: 'A3', staffStep: 8, clef: 'bass' },
+      60: { name: 'C4', staffStep: -2, clef: 'treble' },
+      62: { name: 'D4', staffStep: -1, clef: 'treble' },
+      64: { name: 'E4', staffStep: 0, clef: 'treble' },
+      67: { name: 'G4', staffStep: 2, clef: 'treble' },
+      69: { name: 'A4', staffStep: 3, clef: 'treble' },
+      71: { name: 'B4', staffStep: 4, clef: 'treble' },
+      72: { name: 'C5', staffStep: 5, clef: 'treble' },
+      74: { name: 'D5', staffStep: 6, clef: 'treble' },
+      75: { name: 'D♯5', staffStep: 6, accidental: '♯', clef: 'treble' },
+      76: { name: 'E5', staffStep: 7, clef: 'treble' }
+    };
+
+    const LESSON_TRACKS = {
+      beginner: [
+        { beat: 0, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 0.5, midi: 75, hand: 'right', duration: 0.5 },
+        { beat: 1, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 1.5, midi: 75, hand: 'right', duration: 0.5 },
+        { beat: 2, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 2.5, midi: 71, hand: 'right', duration: 0.5 },
+        { beat: 3, midi: 74, hand: 'right', duration: 0.5 },
+        { beat: 3.5, midi: 72, hand: 'right', duration: 0.5 },
+        { beat: 4, midi: 69, hand: 'right', duration: 0.5 }
+      ],
+      intermediate: [
+        { beat: 0, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 0.5, midi: 75, hand: 'right', duration: 0.5 },
+        { beat: 1, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 1.5, midi: 75, hand: 'right', duration: 0.5 },
+        { beat: 2, midi: 76, hand: 'right', duration: 0.5 },
+        { beat: 2.5, midi: 71, hand: 'right', duration: 0.5 },
+        { beat: 3, midi: 74, hand: 'right', duration: 0.5 },
+        { beat: 3.5, midi: 72, hand: 'right', duration: 0.5 },
+        { beat: 4, midi: 69, hand: 'right', duration: 0.5 },
+        { beat: 0, midi: 45, hand: 'left', duration: 1 },
+        { beat: 1, midi: 52, hand: 'left', duration: 1 },
+        { beat: 2, midi: 57, hand: 'left', duration: 1 },
+        { beat: 3, midi: 52, hand: 'left', duration: 1 },
+        { beat: 4, midi: 45, hand: 'left', duration: 1 }
+      ]
+    };
+
+    const LESSON_KEY_MAP = {
+      a: 60, s: 62, d: 64, f: 67, g: 69,
+      h: 71, j: 72, k: 74, l: 75, ';': 76,
+      z: 45, x: 52, c: 57
+    };
+
     // =========================================================================
     // 2. STATE
     // =========================================================================
@@ -579,7 +827,23 @@
       isPointerDown: false,
       lastGlissMidi: null,
       scaleKeyMap: {}, // keyboard char -> midi note
-      midiToChar: {}   // midi note -> keyboard char
+      midiToChar: {},   // midi note -> keyboard char
+      lesson: {
+        active: false,
+        completed: false,
+        groupIndex: 0,
+        matchedNotes: new Set(),
+        startedAt: null,
+        lastActualAt: null,
+        lastBeat: null,
+        correctNotes: 0,
+        mistakes: 0,
+        timingHits: 0,
+        timingSamples: 0,
+        repeatTimer: null,
+        previewGroupIndex: null,
+        previewTimers: []
+      }
     };
 
     // =========================================================================
@@ -1078,7 +1342,7 @@
       }, delayMs);
 
       // Record into Looper if recording and user-triggered
-      if (state.isRecording && !options.fromLoop && state.currentRecLayer) {
+      if (state.isRecording && !options.fromLoop && !options.fromLesson && state.currentRecLayer) {
         const stepPos = getCurrentCycleStepFloat();
         state.currentRecLayer.push({
           stepPos,
@@ -1419,6 +1683,9 @@
       rebuildScaleKeyboardMapping();
       const piano = document.getElementById('piano');
       piano.innerHTML = '';
+      const lessonMidiToKey = Object.fromEntries(
+        Object.entries(LESSON_KEY_MAP).map(([key, midi]) => [midi, key.toUpperCase()])
+      );
 
       const isBlack = (m) => [1, 3, 6, 8, 10].includes(m % 12);
       const whites = [];
@@ -1434,10 +1701,10 @@
       whites.forEach((m, i) => {
         whiteIdxMap[m] = i;
         const inScale = isMidiInScale(m);
-        const keyChar = state.midiToChar[m] || '';
+        const keyChar = state.lesson.active ? (lessonMidiToKey[m] || '') : (state.midiToChar[m] || '');
         const noteName = NOTE_NAMES[m % 12];
         const el = document.createElement('div');
-        el.className = `white-key ${inScale ? 'in-scale' : (state.scaleLock ? 'out-scale' : '')}`;
+        el.className = `white-key ${state.lesson.active ? '' : (inScale ? 'in-scale' : (state.scaleLock ? 'out-scale' : ''))}`;
         el.dataset.midi = m;
         el.innerHTML = `
           ${inScale ? '<span class="w-1.5 h-1.5 rounded-full bg-[var(--primary)]"></span>' : ''}
@@ -1455,9 +1722,9 @@
         const leftWhiteIdx = whiteIdxMap[m - 1];
         const leftPct = ((leftWhiteIdx + 1) / totalWhites) * 100 - (blackWidthPct / 2);
         const inScale = isMidiInScale(m);
-        const keyChar = state.midiToChar[m] || '';
+        const keyChar = state.lesson.active ? (lessonMidiToKey[m] || '') : (state.midiToChar[m] || '');
         const el = document.createElement('div');
-        el.className = `black-key ${inScale ? 'in-scale' : (state.scaleLock ? 'out-scale' : '')}`;
+        el.className = `black-key ${state.lesson.active ? '' : (inScale ? 'in-scale' : (state.scaleLock ? 'out-scale' : ''))}`;
         el.dataset.midi = m;
         el.style.left = `calc(${leftPct}% + 2px)`;
         el.style.width = `${blackWidthPct}%`;
@@ -1470,20 +1737,416 @@
       });
 
       updateGuideLights();
+      refreshLessonTarget();
     }
 
     function attachKeyPointer(el, midi) {
+      const playInput = (velocity) => {
+        if (state.lesson.active) {
+          handleLessonInput(midi);
+          playPianoNote(midi, { skipSnap: true, velocity, fromLesson: true });
+          return;
+        }
+        playPianoNote(midi, velocity === undefined ? {} : { velocity });
+      };
+
       el.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         state.isPointerDown = true;
         state.lastGlissMidi = midi;
-        playPianoNote(midi);
+        playInput();
       });
       el.addEventListener('pointerenter', () => {
         if (state.isPointerDown && state.lastGlissMidi !== midi) {
           state.lastGlissMidi = midi;
-          playPianoNote(midi, { velocity: 0.58 });
+          playInput(0.58);
         }
+      });
+    }
+
+    function getLessonGroups() {
+      const level = document.getElementById('lessonLevel').value;
+      const selectedHand = level === 'beginner' ? 'right' : document.getElementById('lessonHand').value;
+      const events = LESSON_TRACKS[level].filter(event => selectedHand === 'both' || event.hand === selectedHand);
+      const groupsByBeat = new Map();
+      events.forEach(event => {
+        if (!groupsByBeat.has(event.beat)) groupsByBeat.set(event.beat, []);
+        groupsByBeat.get(event.beat).push({ midi: event.midi, hand: event.hand, duration: event.duration ?? 1 });
+      });
+      return [...groupsByBeat.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .map(([beat, notes]) => ({ beat, notes }));
+    }
+
+    function lessonNoteName(midi) {
+      return LESSON_NOTES[midi]?.name || `${NOTE_NAMES[midi % 12]}${Math.floor(midi / 12) - 1}`;
+    }
+
+    function getLessonMidiToKey() {
+      return Object.fromEntries(
+        Object.entries(LESSON_KEY_MAP).map(([key, midi]) => [midi, key.toUpperCase()])
+      );
+    }
+
+    function renderLessonScore() {
+      const container = document.getElementById('lessonScore');
+      const groups = getLessonGroups();
+      if (!groups.length) {
+        container.innerHTML = '<p class="text-xs text-[var(--foreground)] opacity-70">Brak nut do wyświetlenia.</p>';
+        return;
+      }
+
+      const lastBeat = groups[groups.length - 1].beat;
+      const width = Math.max(320, 138 + lastBeat * 56);
+      const scoreLines = (top, clef, label) => {
+        const lines = Array.from({ length: 5 }, (_, idx) => {
+          const y = top + idx * 16;
+          return `<line x1="52" y1="${y}" x2="${width - 18}" y2="${y}" class="lesson-staff-line"/>`;
+        }).join('');
+        const glyph = clef === 'treble' ? '𝄞' : '𝄢';
+        return `<text x="12" y="${top + 36}" fill="var(--foreground)" font-size="12">${label}</text><text x="27" y="${top + 43}" fill="var(--foreground)" font-size="32">${glyph}</text>${lines}`;
+      };
+
+      const currentIndex = state.lesson.active ? state.lesson.groupIndex : state.lesson.previewGroupIndex;
+      const notes = groups.map((group, groupIndex) => {
+        const x = 82 + group.beat * 56;
+        return group.notes.map(note => {
+          const meta = LESSON_NOTES[note.midi];
+          const isTreble = meta.clef === 'treble';
+          const baseline = isTreble ? 84 : 184;
+          const y = baseline - meta.staffStep * 8;
+          const currentClass = groupIndex === currentIndex ? ' is-current' : '';
+          const ledgerY = isTreble && y > baseline ? `<line x1="${x - 11}" y1="${y}" x2="${x + 11}" y2="${y}" class="lesson-ledger"/>` : '';
+          const accidental = meta.accidental
+            ? `<text x="${x - 16}" y="${y + 5}" fill="var(--foreground)" font-size="17">${meta.accidental}</text>`
+            : '';
+          const name = document.getElementById('lessonNoteNames').checked
+            ? `<text x="${x - 18}" y="${y < 48 ? y - 12 : y + 22}" fill="color-mix(in srgb, var(--foreground) 70%, transparent)" font-size="10">${meta.name}</text>`
+            : '';
+          const flag = note.duration < 1
+            ? `<path d="M ${x + 6} ${y - 27} C ${x + 22} ${y - 22}, ${x + 22} ${y - 16}, ${x + 10} ${y - 12}" fill="none" stroke="var(--foreground)" stroke-width="1.5"/>`
+            : '';
+          return `${ledgerY}${accidental}<ellipse class="lesson-note${currentClass}" cx="${x}" cy="${y}" rx="7" ry="5" transform="rotate(-20 ${x} ${y})"/><line x1="${x + 6}" y1="${y}" x2="${x + 6}" y2="${y - 27}" class="lesson-staff-line"/>${flag}${name}`;
+        }).join('');
+      }).join('');
+
+      container.innerHTML = `
+        <svg width="${width}px" viewBox="0 0 ${width} 212" role="img" aria-label="Pięciolinia z aktualną nutą ćwiczenia">
+          ${scoreLines(20, 'treble', 'Prawa')}
+          ${scoreLines(120, 'bass', 'Lewa')}
+          ${notes}
+        </svg>`;
+    }
+
+    function refreshLessonTarget() {
+      const target = document.getElementById('lessonTarget');
+      const groups = getLessonGroups();
+      const currentIndex = state.lesson.active ? state.lesson.groupIndex : state.lesson.previewGroupIndex;
+      const current = groups[currentIndex] || null;
+      document.querySelectorAll('#piano [data-midi]').forEach(key => {
+        const midi = Number(key.dataset.midi);
+        key.classList.toggle('lesson-target', Boolean(state.lesson.active && current?.notes.some(note => note.midi === midi)));
+      });
+
+      if (current) {
+        const notes = current.notes.map(note => {
+          const key = getLessonMidiToKey()[note.midi];
+          return `${lessonNoteName(note.midi)}${key ? ` (${key})` : ''}`;
+        });
+        target.textContent = `Zagraj: ${notes.join(' + ')}`;
+      } else {
+        target.textContent = state.lesson.active || state.lesson.completed ? 'Fraza ukończona' : 'Wybierz ćwiczenie';
+      }
+    }
+
+    function renderLessonBassKeys() {
+      const container = document.getElementById('lessonBassKeys');
+      container.innerHTML = [45, 52, 57].map(midi => `
+        <button type="button" data-lesson-midi="${midi}" class="lesson-bass-key px-3 py-2 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs font-medium hover:border-[var(--primary)] cursor-pointer">
+          <span class="font-bold">${lessonNoteName(midi)}</span>
+          <kbd class="ml-1 font-mono text-[var(--foreground)] opacity-70">${getLessonMidiToKey()[midi]}</kbd>
+        </button>
+      `).join('');
+      container.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+          const midi = Number(button.dataset.lessonMidi);
+          handleLessonInput(midi);
+          playPianoNote(midi, { skipSnap: true, fromLesson: true });
+        });
+      });
+    }
+
+    function updateLessonView() {
+      const level = document.getElementById('lessonLevel').value;
+      const handSelect = document.getElementById('lessonHand');
+      if (level === 'beginner') {
+        handSelect.value = 'right';
+        handSelect.disabled = true;
+      } else {
+        handSelect.disabled = false;
+      }
+      const usesLeftHand = level === 'intermediate' && handSelect.value !== 'right';
+      document.getElementById('lessonBassPanel').classList.toggle('hidden', !usesLeftHand);
+      document.getElementById('lessonKeyboardGuide').textContent = handSelect.value === 'left'
+        ? 'Lewa ręka: Z=A2, X=E3, C=A3. Możesz też kliknąć przyciski basu poniżej.'
+        : (handSelect.value === 'both'
+          ? 'Melodia: A=C4, S=D4, D=E4, F=G4, G=A4, H=B4, J=C5, K=D5, L=D♯5, ;=E5. Bas: Z=A2, X=E3, C=A3.'
+          : 'Melodia: A=C4, S=D4, D=E4, F=G4, G=A4, H=B4, J=C5, K=D5, L=D♯5, ;=E5.');
+      renderLessonBassKeys();
+      renderLessonScore();
+      refreshLessonTarget();
+    }
+
+    function resetLessonRound() {
+      state.lesson.completed = false;
+      state.lesson.groupIndex = 0;
+      state.lesson.matchedNotes = new Set();
+      state.lesson.startedAt = null;
+      state.lesson.lastActualAt = null;
+      state.lesson.lastBeat = null;
+      state.lesson.correctNotes = 0;
+      state.lesson.mistakes = 0;
+      state.lesson.timingHits = 0;
+      state.lesson.timingSamples = 0;
+    }
+
+    function beginOrEndLesson() {
+      if (state.lesson.active) {
+        clearTimeout(state.lesson.repeatTimer);
+        state.lesson.active = false;
+        document.getElementById('lessonStartBtn').textContent = 'Rozpocznij ćwiczenie';
+        document.getElementById('lessonFeedback').textContent = 'Ćwiczenie zatrzymane. Ukończona fraza zapisuje się w postępach.';
+        renderPiano();
+        renderLessonScore();
+        refreshLessonTarget();
+        return;
+      }
+      resetLessonRound();
+      state.lesson.active = true;
+      state.lesson.previewGroupIndex = null;
+      document.getElementById('lessonStartBtn').textContent = 'Zakończ ćwiczenie';
+      document.getElementById('lessonFeedback').textContent = 'Zagraj podświetloną nutę. W ćwiczeniu chromatycznym blokada skali jest pomijana.';
+      renderPiano();
+      updateLessonView();
+    }
+
+    function loadLessonProgress() {
+      try {
+        const saved = localStorage.getItem('pianolex-lesson-progress-v1');
+        const progress = saved ? JSON.parse(saved) : {};
+        if (!progress || typeof progress !== 'object' || Array.isArray(progress)) {
+          throw new TypeError('Nieprawidłowy format postępu');
+        }
+        return progress;
+      } catch (error) {
+        document.getElementById('lessonFeedback').textContent = `Nie udało się odczytać lokalnego postępu: ${error.message}`;
+        return {};
+      }
+    }
+
+    function updateLessonProgressLabel() {
+      const progress = loadLessonProgress();
+      const entry = progress[`${document.getElementById('lessonLevel').value}-${document.getElementById('lessonHand').value}`];
+      document.getElementById('lessonProgress').textContent = entry
+        ? `Postęp: ${entry.completed} ukończone · rekord ${entry.bestAccuracy}% · ostatnie tempo ${entry.lastTempo ?? entry.bestTempo ?? 0} BPM`
+        : 'Postęp: jeszcze nie ćwiczono';
+    }
+
+    function saveLessonCompletion(accuracy, rhythm) {
+      const level = document.getElementById('lessonLevel').value;
+      const hand = level === 'beginner' ? 'right' : document.getElementById('lessonHand').value;
+      const progress = loadLessonProgress();
+      const key = `${level}-${hand}`;
+      const previous = progress[key] || { completed: 0, bestAccuracy: 0, lastTempo: 0 };
+      progress[key] = {
+        completed: previous.completed + 1,
+        bestAccuracy: Math.max(previous.bestAccuracy, accuracy),
+        lastTempo: Number(document.getElementById('lessonTempo').value),
+        lastRhythm: rhythm
+      };
+      try {
+        localStorage.setItem('pianolex-lesson-progress-v1', JSON.stringify(progress));
+        updateLessonProgressLabel();
+      } catch (error) {
+        document.getElementById('lessonFeedback').textContent = `Fraza ukończona, ale nie udało się zapisać postępu: ${error.message}`;
+      }
+    }
+
+    function completeLessonRound() {
+      const total = state.lesson.correctNotes + state.lesson.mistakes;
+      const accuracy = total ? Math.round((state.lesson.correctNotes / total) * 100) : 0;
+      const rhythm = state.lesson.timingSamples
+        ? Math.round((state.lesson.timingHits / state.lesson.timingSamples) * 100)
+        : 0;
+      saveLessonCompletion(accuracy, rhythm);
+      document.getElementById('lessonFeedback').textContent =
+        `Fraza ukończona: ${accuracy}% trafionych nut · stabilność rytmu ${rhythm}% (${state.lesson.timingSamples} porównań).`;
+
+      if (document.getElementById('lessonRepeat').checked) {
+        resetLessonRound();
+        document.getElementById('lessonFeedback').textContent =
+          `Runda ukończona: ${accuracy}% trafionych nut · stabilność rytmu ${rhythm}%. Za chwilę kolejna runda.`;
+        renderLessonScore();
+        refreshLessonTarget();
+        state.lesson.repeatTimer = setTimeout(() => {
+          if (!state.lesson.active) return;
+          document.getElementById('lessonFeedback').textContent = 'Kolejna runda — spróbuj utrzymać równe odstępy między nutami.';
+          renderLessonScore();
+          refreshLessonTarget();
+        }, 700);
+        return;
+      }
+
+      state.lesson.active = false;
+      state.lesson.completed = true;
+      state.lesson.groupIndex = getLessonGroups().length;
+      document.getElementById('lessonStartBtn').textContent = 'Powtórz ćwiczenie';
+      renderPiano();
+      renderLessonScore();
+      refreshLessonTarget();
+    }
+
+    function handleLessonInput(midi) {
+      if (!state.lesson.active) return;
+      const groups = getLessonGroups();
+      const current = groups[state.lesson.groupIndex];
+      if (!current) return;
+
+      const now = performance.now();
+      const expected = current.notes.some(note => note.midi === midi);
+      if (!expected || state.lesson.matchedNotes.has(midi)) {
+        state.lesson.mistakes += 1;
+        document.getElementById('lessonFeedback').textContent =
+          `To ${lessonNoteName(midi)}, a teraz szukamy: ${current.notes.map(note => lessonNoteName(note.midi)).join(' + ')}. Spróbuj ponownie.`;
+        return;
+      }
+
+      if (state.lesson.matchedNotes.size === 0) {
+        if (state.lesson.lastActualAt !== null) {
+          const expectedInterval = (current.beat - state.lesson.lastBeat) * 60000 / Number(document.getElementById('lessonTempo').value);
+          const actualInterval = now - state.lesson.lastActualAt;
+          if (expectedInterval > 0) {
+            state.lesson.timingSamples += 1;
+            if (Math.abs(actualInterval - expectedInterval) <= Math.max(350, expectedInterval * 0.55)) {
+              state.lesson.timingHits += 1;
+            }
+          }
+        }
+        state.lesson.lastActualAt = now;
+        state.lesson.lastBeat = current.beat;
+      }
+
+      state.lesson.matchedNotes.add(midi);
+      state.lesson.correctNotes += 1;
+      const remaining = current.notes.filter(note => !state.lesson.matchedNotes.has(note.midi));
+      if (remaining.length) {
+        document.getElementById('lessonFeedback').textContent =
+          `Trafiona nuta ${lessonNoteName(midi)}. Dopełnij współbrzmienie: ${remaining.map(note => lessonNoteName(note.midi)).join(' + ')}.`;
+        return;
+      }
+
+      state.lesson.groupIndex += 1;
+      state.lesson.matchedNotes = new Set();
+      if (state.lesson.groupIndex >= groups.length) {
+        completeLessonRound();
+        return;
+      }
+      document.getElementById('lessonFeedback').textContent = `Dobrze — teraz kolejna nuta.`;
+      renderLessonScore();
+      refreshLessonTarget();
+    }
+
+    function playLessonSample() {
+      if (state.lesson.active) {
+        document.getElementById('lessonFeedback').textContent = 'Najpierw zakończ ćwiczenie, aby odsłuchać wzorzec.';
+        return;
+      }
+      const groups = getLessonGroups();
+      if (!groups.length) return;
+      state.lesson.previewTimers.forEach(timer => clearTimeout(timer));
+      state.lesson.previewTimers = [];
+      state.lesson.previewGroupIndex = null;
+      state.lesson.completed = false;
+      renderLessonScore();
+      ensureAudio();
+      const startAt = audioCtx.currentTime + 0.08;
+      const secondsPerBeat = 60 / Number(document.getElementById('lessonTempo').value);
+      groups.forEach((group, groupIndex) => {
+        group.notes.forEach(note => {
+          playPianoNote(note.midi, {
+            time: startAt + group.beat * secondsPerBeat,
+            skipSnap: true,
+            silentLabel: true,
+            fromLesson: true,
+            instrument: 'felt'
+          });
+        });
+        const delay = Math.max(0, (group.beat * secondsPerBeat + 0.08) * 1000);
+        state.lesson.previewTimers.push(setTimeout(() => {
+          state.lesson.previewGroupIndex = groupIndex;
+          renderLessonScore();
+        }, delay));
+      });
+      const endDelay = (groups[groups.length - 1].beat * secondsPerBeat + 0.7) * 1000;
+      state.lesson.previewTimers.push(setTimeout(() => {
+        state.lesson.previewGroupIndex = null;
+        renderLessonScore();
+      }, endDelay));
+    }
+
+    function renderComposerQuiz() {
+      const questions = [
+        {
+          question: 'Czym jest „Für Elise”?',
+          options: ['Utworem fortepianowym', 'Listem Beethovena', 'Symfonią'],
+          answer: 0,
+          explanation: 'To utwór fortepianowy.'
+        },
+        {
+          question: 'Kto skomponował ten utwór?',
+          options: ['Wolfgang Amadeus Mozart', 'Ludwig van Beethoven', 'Fryderyk Chopin'],
+          answer: 1,
+          explanation: 'Autorem jest Ludwig van Beethoven.'
+        },
+        {
+          question: 'Czy wiadomo na pewno, kim była Eliza?',
+          options: ['Tak, źródła są zgodne', 'Nie, jej tożsamość pozostaje niepewna', 'Była nauczycielką Beethovena'],
+          answer: 1,
+          explanation: 'Tożsamość adresatki dedykacji pozostaje przedmiotem dyskusji.'
+        },
+        {
+          question: 'Jaki dźwięk odtworzono przyciskiem odsłuchu?',
+          options: ['A4', 'C5', 'E4'],
+          answer: 0,
+          explanation: 'Odtworzony dźwięk to A4.'
+        }
+      ];
+      const container = document.getElementById('composerQuiz');
+      container.innerHTML = questions.map((item, index) => `
+        <div class="rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 space-y-2">
+          <p class="text-xs font-semibold">${index + 1}. ${item.question}</p>
+          <div class="flex flex-col gap-1">
+            ${item.options.map((option, answer) => `
+              <button type="button" data-quiz-index="${index}" data-quiz-answer="${answer}" class="lesson-answer text-left text-[11px] px-2 py-1.5 rounded-lg border border-[var(--border)] transition cursor-pointer" aria-pressed="false">${option}</button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      container.querySelectorAll('button').forEach(button => {
+        button.addEventListener('click', () => {
+          const questionIndex = Number(button.dataset.quizIndex);
+          const answer = Number(button.dataset.quizAnswer);
+          const correct = answer === questions[questionIndex].answer;
+          container.querySelectorAll(`[data-quiz-index="${questionIndex}"]`).forEach(option => {
+            option.classList.toggle('is-selected', option === button);
+            option.setAttribute('aria-pressed', String(option === button));
+          });
+          const correctCount = questions.filter((item, index) =>
+            container.querySelector(`[data-quiz-index="${index}"].is-selected`)?.dataset.quizAnswer === String(item.answer)
+          ).length;
+          document.getElementById('quizFeedback').textContent =
+            `${correct ? questions[questionIndex].explanation : 'Spróbuj jeszcze raz.'} Poprawne odpowiedzi: ${correctCount}/${questions.length}.`;
+        });
       });
     }
 
@@ -1522,6 +2185,7 @@
             <button
               data-row="${rIdx}"
               data-col="${cIdx}"
+              aria-pressed="${Boolean(val)}"
               style="${bgStyle}"
               class="step-btn h-7 flex-1 min-w-[18px] rounded-md border cursor-pointer ${isGroupEnd ? 'mr-1.5' : ''}"
               aria-label="${tr.label} krok ${cIdx + 1}"
@@ -1596,6 +2260,7 @@
         label.textContent = 'Odpal klimat';
         btn.classList.remove('ring-2', 'ring-[var(--primary)]/40');
       }
+      btn.classList.toggle('is-playing', state.isPlaying);
     }
 
     function updateRecUI() {
@@ -1869,6 +2534,40 @@
       updateFxNodes();
     });
 
+    function stopLessonForSelectionChange() {
+      if (state.lesson.active) {
+        state.lesson.active = false;
+        clearTimeout(state.lesson.repeatTimer);
+        document.getElementById('lessonStartBtn').textContent = 'Rozpocznij ćwiczenie';
+      }
+      state.lesson.completed = false;
+      state.lesson.groupIndex = 0;
+      state.lesson.previewGroupIndex = null;
+    }
+
+    document.getElementById('lessonLevel').addEventListener('change', () => {
+      stopLessonForSelectionChange();
+      updateLessonView();
+      updateLessonProgressLabel();
+      renderPiano();
+    });
+    document.getElementById('lessonHand').addEventListener('change', () => {
+      stopLessonForSelectionChange();
+      updateLessonView();
+      updateLessonProgressLabel();
+      renderPiano();
+    });
+    document.getElementById('lessonTempo').addEventListener('input', (e) => {
+      document.getElementById('lessonTempoLabel').textContent = `${e.target.value} BPM`;
+    });
+    document.getElementById('lessonNoteNames').addEventListener('change', renderLessonScore);
+    document.getElementById('lessonStartBtn').addEventListener('click', beginOrEndLesson);
+    document.getElementById('lessonListenBtn').addEventListener('click', playLessonSample);
+    document.getElementById('quizListenBtn').addEventListener('click', () => {
+      playPianoNote(69, { skipSnap: true, instrument: 'felt', silentLabel: true, fromLesson: true });
+      document.getElementById('quizFeedback').textContent = 'Odtworzono dźwięk A4. Wybierz odpowiedź w pytaniu o wysokość (wzorzec do ćwiczenia słuchu).';
+    });
+
     // Computer Keyboard Jamming
     window.addEventListener('keydown', (e) => {
       if (e.repeat) return;
@@ -1883,6 +2582,16 @@
       const key = e.key.toLowerCase();
       if (['1', '2', '3', '4'].includes(key)) {
         playChord(Number(key) - 1);
+        return;
+      }
+
+      if (state.lesson.active) {
+        const lessonMidi = LESSON_KEY_MAP[key];
+        if (lessonMidi !== undefined && !state.pressedKeys.has(key)) {
+          state.pressedKeys.add(key);
+          handleLessonInput(lessonMidi);
+          playPianoNote(lessonMidi, { skipSnap: true, fromLesson: true });
+        }
         return;
       }
 
@@ -1906,6 +2615,9 @@
     // =========================================================================
     readThemeColors();
     applyPreset(0);
+    renderComposerQuiz();
+    updateLessonView();
+    updateLessonProgressLabel();
     resizeCanvas();
     drawVisualizer();
   </script>
