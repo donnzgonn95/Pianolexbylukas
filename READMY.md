@@ -1,0 +1,46 @@
+# Antigravity Studio — Zero Fałszu (`Pianolexbylukas`)
+
+Interaktywna aplikacja webowa do nauki gry na pianinie, ćwiczenia skal muzycznych oraz poznawania muzyki klasycznej — działająca w całości w przeglądarce bez zewnętrznych bibliotek dźwiękowych.
+
+## Demo na żywo
+
+Aplikacja jest hostowana na GitHub Pages:
+
+👉 [**Uruchom aplikację**](https://donnzgonn95.github.io/Pianolexbylukas/) [**donnzgonn95**](https://github.com/donnzgonn95)
+
+## Główne funkcje
+
+* **Synteza dźwięku w czasie rzeczywistym (Web Audio API):** generowanie dźwięków lokalnie w przeglądarce bez opóźnień i bez korzystania z zewnętrznych plików audio.
+
+* **Interaktywna klawiatura i skale muzyczne:** wizualne podświetlanie dźwięków należących do wybranej skali oraz pełna obsługa myszy, ekranów dotykowych i klawiatury komputera.
+
+* **Tryb nauki z prowadzeniem:** ćwiczenia melodyczne na różnych poziomach trudności z podpowiedziami wizualnymi, możliwością odsłuchu wzorca oraz zapętlaniem fragmentów.
+
+* **Klimat Lo-Fi Nocny:** wbudowany podkład akordowy budujący atmosferę podczas swobodnej gry.
+
+* **Poznaj kompozytora — Beethoven:** interaktywny moduł edukacyjny poświęcony utworowi *„Für Elise”* wraz z odsłuchem dźwięku referencyjnego `A4` i quizem sprawdzającym wiedzę.
+
+## Sterowanie klawiaturą komputera
+
+Białe klawisze przypisane są bezpośrednio do środkowego rzędu klawiatury:
+
+| Klawisz | `A` | `S` | `D` | `F` | `G` | `H` | `J` | `K` | `L` | `;` | 
+| ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | 
+| **Nuta** | C4 | D4 | E4 | F4 | G4 | A4 | B4 | C5 | D5 | E5 | 
+
+## Struktura i uruchomienie lokalne
+
+Projekt opiera się na architekturze pojedynczego pliku (`index.html`) niewymagającego instalacji zależności ani procesu budowania:
+
+1. Sklonuj repozytorium:
+
+   ```
+   git clone https://github.com/donnzgonn95/Pianolexbylukas.git
+   
+   ```
+
+2. Otwórz plik `index.html` bezpośrednio w dowolnej nowoczesnej przeglądarce lub uruchom przez rozszerzenie **Live Server** w VS Code.
+
+**Autor:** `eLJot_pianolux`
+
+Wszelkie prawa zastrzeżone.
